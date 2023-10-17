@@ -90,7 +90,10 @@ namespace Quaver.API.Maps.Processors.Difficulty.Rulesets.Keys.Structures
         /// <summary>
         ///     Is determined by if this data point has more than one hit object (per hand)
         /// </summary>
-        public bool HandChord => HitObjects.Count > 1;
+
+        public bool IsChord => HitObjects.Count == 2;
+        public bool IsHand => HitObjects.Count == 3;
+        public bool IsQuad => HitObjects.Count == 4;
 
         /// <summary>
         ///     Is an index value of this hand's finger state. (Determined by every finger's state)

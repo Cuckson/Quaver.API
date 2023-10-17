@@ -50,6 +50,30 @@ namespace Quaver.API.Maps.Processors.Difficulty.Rulesets.Keys
         public float TJackMaxStrainValue { get; private set; }
         public float TJackCurveExponential { get; private set; }
 
+        // Trills
+        public float TrillLowerBoundaryMs { get; private set; }
+        public float TrillUpperBoundaryMs { get; private set; }
+        public float TrillMaxStrainValue { get; private set; }
+        public float TrillCurveExponential { get; private set; }
+
+        // Jumps
+        public float JumpLowerBoundaryMs { get; private set; }
+        public float JumpUpperBoundaryMs { get; private set; }
+        public float JumpMaxStrainValue { get; private set; }
+        public float JumpCurveExponential { get; private set; }
+
+        // Hands
+        public float HandLowerBoundaryMs { get; private set; }
+        public float HandUpperBoundaryMs { get; private set; }
+        public float HandMaxStrainValue { get; private set; }
+        public float HandCurveExponential { get; private set; }
+
+        // Quads
+        public float QuadLowerBoundaryMs { get; private set; }
+        public float QuadUpperBoundaryMs { get; private set; }
+        public float QuadMaxStrainValue { get; private set; }
+        public float QuadCurveExponential { get; private set; }
+
         // Rolls
         public float RollLowerBoundaryMs { get; private set; }
         public float RollUpperBoundaryMs { get; private set; }
@@ -88,23 +112,41 @@ namespace Quaver.API.Maps.Processors.Difficulty.Rulesets.Keys
         /// </summary>
         public StrainConstantsKeys()
         {
-            // Simple Jack
+            // JUMPJACK
             SJackLowerBoundaryMs = NewConstant("SJackLowerBoundaryMs", 40);
             SJackUpperBoundaryMs = NewConstant("SJackUpperBoundaryMs", 320);
-            SJackMaxStrainValue = NewConstant("SJackMaxStrainValue", 68);
-            SJackCurveExponential = NewConstant("SJackCurveExponential", 1.17f);
+            SJackMaxStrainValue = NewConstant("SJackMaxStrainValue", 70);
+            SJackCurveExponential = NewConstant("SJackCurveExponential", 1.13f);
 
-            // Tech Jack
+            // CHORDJACK
             TJackLowerBoundaryMs = NewConstant("TJackLowerBoundaryMs", 40);
             TJackUpperBoundaryMs = NewConstant("TJackUpperBoundaryMs", 330);
-            TJackMaxStrainValue = NewConstant("TJackMaxStrainValue", 70);
-            TJackCurveExponential = NewConstant("TJackCurveExponential", 1.14f);
+            TJackMaxStrainValue = NewConstant("TJackMaxStrainValue", 60);
+            TJackCurveExponential = NewConstant("TJackCurveExponential", 1.15f);
 
-            // Roll/Trill
+            // Trill
+            TrillLowerBoundaryMs = NewConstant("TrillLowerBoundaryMs", 30);
+            TrillUpperBoundaryMs = NewConstant("TrillUpperBoundaryMs", 230);
+            TrillMaxStrainValue = NewConstant("TrillMaxStrainValue", 80);
+            TrillCurveExponential = NewConstant("TrillCurveExponential", 1.15f);
+
+            // Jump
+            JumpLowerBoundaryMs = NewConstant("JumpLowerBoundaryMs", 30);
+            JumpUpperBoundaryMs = NewConstant("JumpUpperBoundaryMs", 230);
+            JumpMaxStrainValue = NewConstant("JumpMaxStrainValue", 60);
+            JumpCurveExponential = NewConstant("JumpCurveExponential", 1.13f);
+
+            // Hand
+            HandLowerBoundaryMs = NewConstant("HandLowerBoundaryMs", 30);
+            HandUpperBoundaryMs = NewConstant("HandUpperBoundaryMs", 230);
+            HandMaxStrainValue = NewConstant("HandMaxStrainValue", 40);
+            HandCurveExponential = NewConstant("HandCurveExponential", 1.15f);
+
+            // Roll
             RollLowerBoundaryMs = NewConstant("RollLowerBoundaryMs", 30);
             RollUpperBoundaryMs = NewConstant("RollUpperBoundaryMs", 230);
-            RollMaxStrainValue = NewConstant("RollMaxStrainValue", 55);
-            RollCurveExponential = NewConstant("RollCurveExponential", 1.13f);
+            RollMaxStrainValue = NewConstant("RollMaxStrainValue", 80);
+            RollCurveExponential = NewConstant("RollCurveExponential", 1.19f);
 
             // Bracket
             BracketLowerBoundaryMs = NewConstant("BracketLowerBoundaryMs", 30);
@@ -113,7 +155,7 @@ namespace Quaver.API.Maps.Processors.Difficulty.Rulesets.Keys
             BracketCurveExponential = NewConstant("BracketCurveExponential", 1.13f);
 
             // LN
-            LnBaseMultiplier = NewConstant("LnBaseMultiplier", 0.6f);
+            LnBaseMultiplier = NewConstant("LnBaseMultiplier", 0.2f);
             LnLayerToleranceMs = NewConstant("LnLayerToleranceMs", 60f);
             LnLayerThresholdMs = NewConstant("LnLayerThresholdMs", 93.7f);
             LnReleaseAfterMultiplier = NewConstant("LnReleaseAfterMultiplier", 1.0f);

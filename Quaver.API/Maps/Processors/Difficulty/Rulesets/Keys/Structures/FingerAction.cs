@@ -22,6 +22,10 @@ namespace Quaver.API.Maps.Processors.Difficulty.Rulesets.Keys.Structures
         SimpleJack,
         TechnicalJack,
         Roll,
+        Trill,
+        Jump,
+        Hand,
+        Quad,
         Bracket
     }
 }

@@ -170,8 +170,32 @@ namespace Quaver.API.Maps.Processors.Difficulty.Rulesets.Keys
             // todo: use ComputeForActionPatterns();
             ComputeForRollManipulation();
             ComputeForJackManipulation();
+            ComputeForDensity();
             ComputeForLnMultiplier();
             return CalculateOverallDifficulty();
+        }
+
+        private void ComputeForDensity()
+        {
+            for (var i = 0; i < StrainSolverData.Count - 1; i++)
+            {
+                var curHitOb = StrainSolverData[i];
+
+                if (curHitOb.IsHand || curHitOb.IsChord)
+                {
+                    for (var j = i + 1; j < StrainSolverData.Count; j++)
+                    {
+                        var nextHitOb = StrainSolverData[j];
+                        if (nextHitOb.StartTime == curHitOb.StartTime)
+                            continue;
+
+                        if (nextHitOb.IsChord && curHitOb.FingerState != nextHitOb.FingerState)
+                        {
+                            // do later
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -280,26 +304,40 @@ namespace Quaver.API.Maps.Processors.Difficulty.Rulesets.Keys
                 for (var j = i + 1; j < StrainSolverData.Count; j++)
                 {
                     var nextHitOb = StrainSolverData[j];
+                    var thirdHitOb = (j + 1) < StrainSolverData.Count - 1 ? StrainSolverData[j + 1] : null;
+
+                    var hitObjectList = new List<StrainSolverData> { curHitOb, nextHitOb, thirdHitOb };
                     if (curHitOb.Hand == nextHitOb.Hand && nextHitOb.StartTime > curHitOb.StartTime)
                     {
-                        // Determined by if there's a minijack within 2 set of chords/single notes
-                        var actionJackFound = ( curHitOb.FingerState & nextHitOb.FingerState ) != 0;
-
-                        // Determined by if a chord is found in either finger state
-                        var actionChordFound = curHitOb.HandChord || nextHitOb.HandChord;
-
                         // Determined by if both fingerstates are exactly the same
-                        var actionSameState = curHitOb.FingerState == nextHitOb.FingerState;
+                        var actionJumpjack = curHitOb.FingerState == nextHitOb.FingerState;
 
                         // Determined by how long the current finger action is
                         var actionDuration = nextHitOb.StartTime - curHitOb.StartTime;
+
+                        var actionJumpFound = curHitOb.IsChord || nextHitOb.IsChord;
+
+                        var actionHandFound = curHitOb.IsHand || nextHitOb.IsHand;
+
+                        var actionChordjack = (curHitOb.FingerState & nextHitOb.FingerState) != 0;
+
+                        var actionMinijack = !actionJumpFound && (curHitOb.FingerState & nextHitOb.FingerState) != 0;
+
+                        var actionTrillFound = false;
+                        if (thirdHitOb != null && nextHitOb.Hand == thirdHitOb.Hand && thirdHitOb.StartTime > curHitOb.StartTime)
+                            actionTrillFound = !actionMinijack && !hitObjectList.Exists(x => x.IsHand || x.IsChord) && thirdHitOb.Hand == nextHitOb.Hand;
+
+                        // Not a trill
+                        var actionRollFound = false;
+                        if (thirdHitOb != null)
+                            actionRollFound = !actionJumpFound && !actionJumpjack;
 
                         // Apply the "NextStrainSolverDataOnCurrentHand" value on the current hit object and also apply action duration.
                         curHitOb.NextStrainSolverDataOnCurrentHand = nextHitOb;
                         curHitOb.FingerActionDurationMs = actionDuration;
 
-                        // Trill/Roll
-                        if (!actionChordFound && !actionSameState)
+                        // Roll
+                        if (actionRollFound)
                         {
                             curHitOb.FingerAction = FingerAction.Roll;
                             curHitOb.ActionStrainCoefficient = GetCoefficientValue(actionDuration,
@@ -309,8 +347,8 @@ namespace Quaver.API.Maps.Processors.Difficulty.Rulesets.Keys
                                 StrainConstants.RollCurveExponential);
                         }
 
-                        // Simple Jack
-                        else if (actionSameState)
+                        // JUMPJACK
+                        if (actionJumpjack)
                         {
                             curHitOb.FingerAction = FingerAction.SimpleJack;
                             curHitOb.ActionStrainCoefficient = GetCoefficientValue(actionDuration,
@@ -320,8 +358,8 @@ namespace Quaver.API.Maps.Processors.Difficulty.Rulesets.Keys
                                 StrainConstants.SJackCurveExponential);
                         }
 
-                        // Tech Jack
-                        else if (actionJackFound)
+                        // CHORDJACK
+                        else if (actionChordjack)
                         {
                             curHitOb.FingerAction = FingerAction.TechnicalJack;
                             curHitOb.ActionStrainCoefficient = GetCoefficientValue(actionDuration,
@@ -348,14 +386,7 @@ namespace Quaver.API.Maps.Processors.Difficulty.Rulesets.Keys
             }
         }
 
-        /// <summary>
-        ///     Scans every finger action and compute a pattern multiplier.
-        ///     Pattern manipulation, and inflated patterns are factored into calculation.
-        /// </summary>
-        /// <param name="qssData"></param>
-        private void ComputeForActionPatterns()
-        {
-        }
+
 
         /// <summary>
         ///     Scans for roll manipulation. "Roll Manipulation" is definced as notes in sequence
